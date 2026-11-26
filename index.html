@@ -466,6 +466,19 @@ button.blk:not([aria-disabled]):hover{filter:brightness(1.08)}
 .chartgrid{grid-template-columns:minmax(0,1fr)!important}
 @container (min-width:560px){.chartgrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 @container (min-width:960px){.chartgrid{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+/* mensagens */
+.chat{display:flex;gap:10px;align-items:flex-start;margin:0 0 18px}
+.cav{width:32px;height:32px;border-radius:10px;flex:none;margin-top:3px}
+.msgs{display:grid;gap:8px;justify-items:start;flex:1;min-width:0}
+.msg{position:relative;max-width:min(640px,100%);background:var(--sf);border:1px solid var(--ln);border-radius:6px 18px 18px 18px;padding:11px 42px 11px 15px;box-shadow:0 1px 3px rgb(0 0 0/.05)}
+.msg:first-child{background:color-mix(in srgb,var(--ag) 11%,var(--sf));border-color:color-mix(in srgb,var(--ag) 28%,var(--ln))}
+.msg p{margin:0;font-size:15.5px;line-height:1.45;text-wrap:pretty}
+.msg .ma{margin-top:9px;min-height:36px}
+.mx{position:absolute;top:7px;right:7px;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;color:var(--mu)}
+.mx .ic{width:15px;height:15px}.mx::after{content:"";position:absolute;inset:-7px}.mx:hover{background:var(--sf2);color:var(--ink)}
+.chat.anim .msg{animation:pop .4s ease-out both;animation-delay:calc(var(--i)*.2s)}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}}
+.mmore{min-height:34px;padding:0 4px;font-size:14px}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 <script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
@@ -870,10 +883,79 @@ WR.week=()=>{
   <div class="mini"><h4>Pendências concluídas</h4><p>${plural(dn7,'concluída','concluídas')}</p>${fig({type:'cols',stack:true,int:true,cats:wcats,hi:6,series:[{name:'Faculdade',color:'var(--c4)',vals:fd7},{name:'Trabalho',color:'var(--c3)',vals:td7}],fmt:v=>String(Math.round(v)),label:'Pendências concluídas por dia',tip:i=>`<b>${fd7[i]+td7[i]}</b><span>${fShort(d7[i])}</span>`+tipRow('var(--c4)','Faculdade',fd7[i])+tipRow('var(--c3)','Trabalho',td7[i])},150)}<div class="legend"><span><i style="--c:var(--c4)"></i>Faculdade</span><span><i style="--c:var(--c3)"></i>Trabalho</span></div></div>
   </div>`};
 };
+/* Mensagens do painel: frases curtas que reagem aos dados e à hora do dia */
+const NK='painel-msgs-v1';
+const nkLoad=()=>{try{const o=JSON.parse(localStorage.getItem(NK)||'{}');return o.d===T()?o:{d:T(),hid:[],off:0}}catch(e){return{d:T(),hid:[],off:0}}};
+const nkSave=o=>{try{localStorage.setItem(NK,JSON.stringify(o))}catch(e){}};
+let chatSig='';
+function firstName(){const w=String(cfg().name||'').trim().split(/\s+/).filter(x=>x&&!/^\p{L}\.$/u.test(x));return w[0]||''}
+const minTxt=m=>m<60?m+' min':Math.floor(m/60)+'h'+(m%60?pad(m%60):'');
+function nudges(){
+  const out=[],add=(id,score,html,act)=>out.push({id,score,html,act});
+  const t=T(),now=new Date(),hr=now.getHours(),nm=nowMin(),nome=firstName(),vc=nome?', '+h(nome):'';
+  const evs=eventsOn(t).filter(e=>!e.all),mo=MOF[now.getMonth()],day=now.getDate(),dim=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  // sono / madrugada
+  const tm=hr>=20?addD(t,1):t,firstTomorrow=(()=>{const ev=eventsOn(tm).filter(e=>!e.all)[0],bl=blocksOn(tm).find(b=>b.lang!=='rest'&&b.h);const a=ev?{h:ev.s,t:ev.t}:null,b=bl?{h:bl.h,t:shortAct(bl.act)}:null;return a&&b?(a.h<=b.h?a:b):a||b})();
+  if(hr<5)add('sono',96,`Já é madrugada${vc}. ${firstTomorrow?`Seu dia começa às <b>${h(firstTomorrow.h)}</b> com ${h(firstTomorrow.t)}. `:''}Dormir agora rende mais que qualquer revisão.`);
+  else if(hr>=23)add('sono',72,`Já são ${hr}h${vc}. ${firstTomorrow?`Amanhã começa às <b>${h(firstTomorrow.h)}</b> com ${h(firstTomorrow.t)}. `:''}Que tal ir encerrando o dia?`);
+  // próximo compromisso / agora
+  const nx=evs.find(e=>mins(e.s)>nm),cur=evs.find(e=>{const s=mins(e.s);let en=e.e?mins(e.e):s+60;if(en<=s)en=1440;return s<=nm&&nm<en});
+  if(hr>=5&&nx&&mins(nx.s)-nm<=120)add('prox',91,`Daqui a <b>${minTxt(mins(nx.s)-nm)}</b>: ${h(nx.t)} (${h(nx.s)}).`,{l:'Ver',a:'evopen',d:{id:nx.id,day:t}});
+  else if(cur)add('agora',60,`Agora: <b>${h(cur.t)}</b>${cur.e?' até '+h(cur.e):''}.`);
+  if(hr>=5&&hr<12){if(evs.length)add('dia',50,`Bom dia${vc}! Hoje são <b>${plural(evs.length,'compromisso','compromissos')}</b>; o primeiro é ${h(evs[0].t)} às ${h(evs[0].s)}.`);else add('dia',30,`Bom dia${vc}! Agenda livre hoje: bom dia para adiantar alguma pendência.`)}
+  // provas
+  const pv=facul().tasks.filter(x=>!x.done&&x.type==='Prova'&&x.due&&x.due>=t).sort(byDue)[0];
+  if(pv){const n=dd(t,pv.due),a={l:'Abrir',a:'popen',d:{src:'fac',id:pv.id}};
+    if(n===0)add('prova',99,`Hoje é dia de <b>${h(pv.t)}</b>. Você se preparou: respira e vai com calma.`,a);
+    else if(n===1)add('prova',93,`Amanhã tem <b>${h(pv.t)}</b>. Revisão leve hoje e cama cedo.`,a);
+    else if(n<=7)add('prova',77,`Faltam <b>${plural(n,'dia','dias')}</b> para ${h(pv.t)}. Já dá para montar a revisão.`,a);}
+  // atrasadas e para hoje
+  const pend=pendAll(),late=pend.filter(p=>p.due&&p.due<t),hoje=pend.filter(p=>p.due===t);
+  if(late.length)add('atraso',82,`${late.length===1?'Tem uma pendência atrasada':'Tem <b>'+late.length+' pendências atrasadas</b>'}: ${h(late[0].t)}. Que tal tirar essa da frente primeiro?`,{l:'Abrir',a:'popen',d:{src:late[0].src,id:late[0].id}});
+  if(hoje.length&&hr>=5)add('hoje',64,`Pra hoje: ${hoje.slice(0,2).map(p=>'<b>'+h(p.t)+'</b>').join(' e ')}${hoje.length>2?' e mais '+(hoje.length-2):''}.`,{l:'Concluir',a:'ptoggle',d:{src:hoje[0].src,id:hoje[0].id}});
+  const hi=trab().tasks.filter(x=>x.st!=='done'&&x.pri==='a'&&x.due&&dd(t,x.due)>=0&&dd(t,x.due)<=2).sort(byDue)[0];
+  if(hi)add('trab',66,`No trabalho, prioridade alta: <b>${h(hi.t)}</b> (${rel(hi.due)}).`,{l:'Abrir',a:'popen',d:{src:'trab',id:hi.id}});
+  const turno=evs.find(e=>e.c==='trab'&&mins(e.s)>nm);
+  if(turno&&hr>=5&&mins(turno.s)-nm>120)add('turno',57,`Hoje tem <b>${h(turno.t)}</b> às ${h(turno.s)}. Se der, descansa antes.`);
+  // idiomas
+  const pm=planMin(t),mt=minOn(t),sk=lStreak(),nb=blocksOn(t).find(b=>b.lang!=='rest'&&!blockLog(b,t));
+  if(pm>0||mt.t>0){
+    if(pm>0&&mt.t>=pm)add('idi',52,`Meta de idiomas de hoje cumprida: <b>${Math.round(mt.t)} min</b>. Mandou bem!`);
+    else if(hr>=18&&mt.t===0&&sk>0)add('idi',86,`Sua sequência de <b>${plural(sk,'dia','dias')}</b> nos idiomas está em jogo. Cinco minutos de shadowing já salvam o dia.`,{l:'Fazer 5 min (EN)',a:'l5',d:{l:'en'}});
+    else if(hr>=18&&mt.t===0)add('idi',63,`Ainda não rolou idioma hoje. Que tal 5 minutos de música em espanhol prestando atenção na pronúncia?`,{l:'Fazer 5 min (ES)',a:'l5',d:{l:'es'}});
+    else if(nb&&hr>=5)add('idi',hr>=18?58:44,`${mt.t>0?`Já foram <b>${Math.round(mt.t)} de ${pm} min</b> de idiomas. `:''}Próximo bloco: ${h(nb.slot.toLowerCase())}, ${h(shortAct(nb.act))} (${+nb.min||0} min).`,{l:'Marcar feito',a:'ltog',d:{id:nb.id,day:t}});
+  }
+  // hábitos
+  const H=hab().habits,falta=H.filter(x=>!isDone(x.id,t));
+  if(H.length){
+    if(!falta.length)add('hab',51,`Todos os hábitos de hoje feitos. Isso é constância!`);
+    else if(hr>=19)add('hab',61,`Falta${falta.length>1?'m':''} ${plural(falta.length,'hábito','hábitos')} para fechar o dia: ${falta.slice(0,3).map(x=>'<b>'+h(x.name)+'</b>').join(', ')}.`,{l:'Marcar '+falta[0].name,a:'htog',d:{id:falta[0].id,day:t}});
+    const sh=H.map(x=>({x,n:streak(x.id)})).filter(o=>o.n>=5&&!isDone(o.x.id,t)).sort((a,b)=>b.n-a.n)[0];
+    if(sh)add('habsk',48,`${h(sh.x.name)}: <b>${sh.n} dias seguidos</b>. Não deixa quebrar hoje.`,{l:'Marcar feito',a:'htog',d:{id:sh.x.id,day:t}});
+  }
+  // dinheiro
+  const s=sums(txMonth(t.slice(0,7))),bud=+cfg().budget||0,bp=bud?s.o/bud*100:0,ap=apOf(t.slice(0,7));
+  if(bud){if(bp>100)add('orc',71,`Os gastos de ${mo} passaram do orçamento: <b>${Math.round(bp)}%</b>. Segura até o fim do mês?`,{l:'Ver gastos',a:'gofin'});
+    else if(bp>85)add('orc',62,`Você já usou <b>${Math.round(bp)}%</b> do orçamento e ainda faltam ${dim-day} dias no mês.`,{l:'Ver gastos',a:'gofin'});
+    else if(day>=15&&s.o>0)add('orc',28,`Gastos sob controle: ${Math.round(bp)}% do orçamento até agora.`);}
+  if(inv().items.length){if(ap>0)add('ap',34,`Você já investiu <b>${R(ap)}</b> em ${mo}${s.i>0?` (${Math.round(ap/s.i*100)}% do que entrou)`:''}.`);
+    else if(day>=5)add('ap',40,`Ainda não teve aporte em ${mo}. Que tal separar um pouco hoje, nem que seja pouco?`,{l:'Aportar',a:'apnew'});}
+  // fallback
+  const frases=['Um passo pequeno hoje já conta. Constância vence intensidade.','Escolhe uma coisa da lista e resolve só ela. O resto fica mais leve.','Cuida do sono: ele é o melhor revisor de matéria que existe.','Se o dia apertar, faz a versão de 5 minutos. Melhor que zero.'];
+  add('frase',10,frases[(now.getDate()+now.getMonth())%frases.length]);
+  return out.sort((a,b)=>b.score-a.score);
+}
+function chatHTML(){
+  const st=nkLoad(),all=nudges().filter(m=>!st.hid.includes(m.id));if(!all.length)return '';
+  const off=all.length>3?st.off%all.length:0,show=[0,1,2].map(i=>all[(off+i)%all.length]).filter((m,i,a)=>m&&a.indexOf(m)===i);
+  const sig=show.map(m=>m.id).join('|'),anim=sig!==chatSig;chatSig=sig;
+  return `<div class="chat ${anim?'anim':''}" aria-live="polite"><img class="cav" src="favicon.png" alt="" width="32" height="32"><div class="msgs">${show.map((m,i)=>`<div class="msg" style="--i:${i}"><p>${m.html}</p>${m.act?`<button class="btn sm ghost ma" data-act="${m.act.a}" ${Object.entries(m.act.d||{}).map(([k,v])=>`data-${k}="${h(v)}"`).join(' ')}>${h(m.act.l)}</button>`:''}<button class="mx" data-act="nudx" data-id="${m.id}" aria-label="Dispensar mensagem">${ic('x')}</button></div>`).join('')}${all.length>3?`<button class="lnk mmore" data-act="nudn">Outras mensagens</button>`:''}</div></div>`;
+}
+
 VR.hoje=()=>{
   const t=T(),c=cfg(),evs=eventsOn(t),pend=pendAll(),H=hab().habits,ed=!!ui.dashEdit,dc=dashCfg();
   const over=pend.filter(p=>p.due&&p.due<t),wk=pend.filter(p=>p.due&&p.due>=t&&dd(t,p.due)<7),hd=H.filter(x=>isDone(x.id,t)).length;
-  let o='';
+  let o=chatHTML();
   if(c.sample)o+=`<div class="note"><span>Este é um exemplo preenchido para você explorar. Quando quiser, apague e comece com os seus dados.</span><button class="btn sm ghost" data-act="reset">Apagar exemplo</button></div>`;
   o+=`<div class="dtop"><div class="stats">${stat(plural(evs.length,'compromisso hoje','compromissos hoje'),'var(--ag)')}${stat(plural(wk.length,'pendência nos próximos 7 dias','pendências nos próximos 7 dias'),'var(--fac)')}${over.length?stat(plural(over.length,'atrasada','atrasadas'),'var(--bad)'):''}${H.length?stat(hd+' de '+H.length+' hábitos feitos','var(--hab)'):''}</div><button class="btn sm ${ed?'':'ghost'}" data-act="dedit" aria-pressed="${ed}">${ic(ed?'check':'sliders')}${ed?'Concluir':'Personalizar'}</button></div>`;
   if(ed)o+=`<div class="dedit"><p><b>Personalizando a página.</b> Use as setas (ou arraste, no computador) para mudar a ordem, e P, M e G para o tamanho: pequeno, médio ou largura toda. No celular os blocos ficam um embaixo do outro. Vale para todos os seus aparelhos.</p><div class="opts">${dc.hide.map(k=>`<button class="btn sm ghost" data-act="wshow" data-w="${k}">${ic('plus')}${WIDGETS[k].t}</button>`).join('')}<button class="btn sm ghost" data-act="wreset">Restaurar padrão</button></div></div>`;
@@ -1530,6 +1612,9 @@ function resetAll(){
 /* ---------- actions ---------- */
 const ACT={
   mclose:closeModal,
+  nudx:el=>{const st=nkLoad();if(!st.hid.includes(el.dataset.id))st.hid.push(el.dataset.id);nkSave(st);render()},
+  nudn:()=>{const st=nkLoad();st.off=(st.off||0)+3;nkSave(st);chatSig='';render()},
+  gofin:()=>go('financas'),
   dedit:()=>{ui.dashEdit=!ui.dashEdit;render()},
   wmv:el=>setDash(d=>{const vis=d.order.filter(k=>!d.hide.includes(k)),i=vis.indexOf(el.dataset.w),o=vis[i+(+el.dataset.d)];if(i<0||!o)return;const a=d.order.indexOf(el.dataset.w),b=d.order.indexOf(o);[d.order[a],d.order[b]]=[d.order[b],d.order[a]]}),
   wsz:el=>setDash(d=>{d.size[el.dataset.w]=el.dataset.z}),
