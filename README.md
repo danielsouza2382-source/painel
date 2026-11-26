@@ -1,6 +1,6 @@
 # Meu painel
 
-Agenda (dia, semana e mês), finanças e investimentos, faculdade, trabalho e hábitos num site só, que funciona no celular e no computador e pode ser instalado como app.
+Agenda (dia, semana e mês), finanças e investimentos, faculdade, idiomas (inglês e espanhol), trabalho e hábitos num site só, com gráficos em cada aba, que funciona no celular e no computador e pode ser instalado como app.
 
 O site é este repositório publicado pelo GitHub Pages. **Os seus dados não ficam aqui**: ficam no repositório privado `painel-dados`, um arquivo por área (`data/agenda…`, `data/fin-2026.json` etc.). Cada alteração é enviada na hora, e as dos outros aparelhos chegam a cada 20 segundos. Sem internet, o painel continua funcionando e envia tudo quando a conexão volta.
 
