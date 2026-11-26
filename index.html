@@ -434,6 +434,38 @@ button.blk:not([aria-disabled]):hover{filter:brightness(1.08)}
 .vcl{list-style:none;margin:0;padding:0;max-height:420px;overflow:auto}
 .vi{display:flex;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--ln);width:100%;text-align:left}
 .vcl>li:first-child .vi{border-top:0}.vi b{font-weight:750}.vi span:last-child{color:var(--mu);font-size:14px;flex:1}
+/* hoje grid */
+#content{container-type:inline-size}
+.dtop{display:flex;align-items:center;gap:10px 12px;flex-wrap:wrap;margin:2px 0 16px}.dtop .stats{margin:0;flex:1 1 300px}
+.dgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;grid-auto-flow:row dense;align-items:stretch}
+.dgrid>.w{grid-column:1/-1}
+@container (min-width:600px){.dgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.dgrid>.w-s{grid-column:auto/span 1}.dgrid>.w-m{grid-column:auto/span 2}}
+@container (min-width:1100px){.dgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.w{background:color-mix(in srgb,var(--tone) 8%,var(--sf));border-color:color-mix(in srgb,var(--tone) 28%,var(--ln));container-type:inline-size;display:flex;flex-direction:column;min-width:0}
+.w>header{gap:10px;margin-bottom:12px}.w>header h2{font-size:17px}
+.wi{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:var(--tone);color:var(--ton,var(--onc));flex:none}.wi .ic{width:19px;height:19px}
+.w .bar{background:color-mix(in srgb,var(--tone) 10%,var(--sf2))}
+.w .wsd:hover,.w .tlr:hover{background:color-mix(in srgb,var(--tone) 10%,transparent)}
+.w .tl>li,.w .tk,.w .lb{border-color:color-mix(in srgb,var(--tone) 18%,var(--ln))}
+.dgrid.editing .w{outline:2px dashed color-mix(in srgb,var(--tone) 65%,transparent);outline-offset:-1px;cursor:grab}
+.dgrid.editing .wc{pointer-events:none;opacity:.45;max-height:240px;overflow:hidden}
+.w.dragover{box-shadow:0 0 0 3px var(--ac)}
+.wbar{display:flex;align-items:center;gap:4px;margin:-6px -6px 12px;padding:4px;border-radius:12px;background:var(--sf);border:1px solid var(--ln)}
+.wbar .sp{flex:1}.wbar .iconbtn{width:40px;height:40px}.wbar .iconbtn:disabled{opacity:.3}.wbar .seg button{min-width:40px;padding:0 10px}
+.dedit{padding:14px 16px;border-radius:16px;background:var(--sf);border:1px solid var(--ln);margin-bottom:16px;display:grid;gap:10px}.dedit p{margin:0;font-size:14.5px}
+.mstats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px}
+@container (min-width:620px){.mstats{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.mst>span{font-size:13.5px;color:var(--mu);font-weight:650;display:block}
+.mst b{display:block;font-size:clamp(19px,6.5cqi,26px);font-weight:800;letter-spacing:-.02em;line-height:1.2;white-space:nowrap;margin:2px 0 4px}
+.mst small{font-size:13px;color:var(--mu);display:block;margin-top:4px}.mst .bar{margin-top:6px}
+.nxt{margin-top:14px;padding-top:12px;border-top:1px dashed color-mix(in srgb,var(--tone,var(--ink)) 30%,var(--ln))}.nxt h4{margin:0 0 8px;font-size:14px;font-weight:750;color:var(--mu)}.nxt .skr{margin-bottom:8px;font-size:14px}
+.nxd{display:grid;grid-template-columns:7.5em minmax(0,1fr);gap:10px;text-align:left;padding:6px 0;width:100%;font-size:14px;align-items:baseline}.nxd span{color:var(--mu)}.nxd:hover b{text-decoration:underline}
+.fin2{display:grid;gap:18px}.finl h4{margin:0 0 4px;font-size:14.5px;font-weight:750}
+@container (min-width:760px){.fin2{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}}
+@container (max-width:759px){.w-m .finl,.w-s .finl{display:none}}
+.chartgrid{grid-template-columns:minmax(0,1fr)!important}
+@container (min-width:560px){.chartgrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@container (min-width:960px){.chartgrid{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 <script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
@@ -516,6 +548,10 @@ check:'<path d="m5 12.5 4.5 4.5L19 7.5"/>',x:'<path d="M6 6l12 12M18 6 6 18"/>',
 trash:'<path d="M4 7h16M10 11v6M14 11v6M9 7V4.5h6V7M6 7l1 13.5h10L18 7"/>',
 edit:'<path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/>',
 globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/>',
+up:'<path d="M12 19V5M6 11l6-6 6 6"/>',down:'<path d="M12 5v14M6 13l6 6 6-6"/>',
+eyeoff:'<path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 6c5 0 9 6 9 6a17 17 0 0 1-3.2 3.7M6.6 6.6C4.3 8.2 3 12 3 12s4 6 9 6a9 9 0 0 0 4.4-1.2"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
+sliders:'<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/>',
+chart:'<path d="M4 20V11M10 20V5M16 20v-6M21 20H3"/>',
 flame:'<path d="M12 3c.8 3.4 4.8 5 4.8 10a4.8 4.8 0 0 1-9.6 0c0-2.6 1.6-3.8 1.9-5.6 1 .9 1.6 2 1.6 3 1.3-1.6 1.9-4.6 1.3-7.4z"/>'};
 const ic=n=>`<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${IC[n]}</svg>`;
 
@@ -527,7 +563,7 @@ const cfg=()=>D('cfg',()=>({name:'',budget:0,ws:0,h0:6,h1:24}));
 const facul=()=>D('facul',()=>({subs:[],tasks:[]}));
 const trab=()=>D('trab',()=>({tasks:[]}));
 const hab=()=>D('hab',()=>({habits:[],log:{}}));
-const inv=()=>D('inv',()=>({items:[],hist:[]}));
+const inv=()=>D('inv',()=>({items:[],hist:[],ap:[]}));
 const agDoc=k=>D(k,()=>({events:[]}));
 const finDoc=y=>D('fin-'+y,()=>({tx:[]}));
 const VALID=/^(cfg|facul|trab|hab|inv|idi|ag-rec|ag-\d{4}|fin-\d{4}|idl-\d{4})$/;
@@ -762,38 +798,92 @@ function adChips(day){
 
 /* ---------- views ---------- */
 const VR={};
-VR.hoje=()=>{
-  const t=T(),c=cfg(),evs=eventsOn(t),pend=pendAll(),H=hab().habits;
-  const over=pend.filter(p=>p.due&&p.due<t),wk=pend.filter(p=>p.due&&p.due>=t&&dd(t,p.due)<7);
-  const hd=H.filter(x=>isDone(x.id,t)).length,s=sums(txMonth(t.slice(0,7))),iv=invTot(),ws=weekStart(t),nm=nowMin();
-  let o='';
-  if(c.sample)o+=`<div class="note"><span>Este é um exemplo preenchido para você explorar. Quando quiser, apague e comece com os seus dados.</span><button class="btn sm ghost" data-act="reset">Apagar exemplo</button></div>`;
-  o+=`<div class="stats">${stat(plural(evs.length,'compromisso hoje','compromissos hoje'),'var(--ag)')}${stat(plural(wk.length,'pendência nos próximos 7 dias','pendências nos próximos 7 dias'),'var(--fac)')}${over.length?stat(plural(over.length,'atrasada','atrasadas'),'var(--bad)'):''}${H.length?stat(hd+' de '+H.length+' hábitos feitos','var(--hab)'):''}</div>`;
+/* Hoje: a grid of blocks the person can reorder, resize (P/M/G) and hide; columns follow the screen width */
+const WIDGETS={
+  agenda:{t:'Agenda de hoje',tone:'var(--ag)',icon:'cal',def:'m'},
+  pend:{t:'Pendências',tone:'var(--fac)',icon:'cap',def:'s',on:'#241a00'},
+  money:{t:'Dinheiro do mês',tone:'var(--fin)',icon:'wallet',def:'s'},
+  fin:{t:'Gastos x investimentos',tone:'var(--c2)',icon:'chart',def:'m'},
+  idi:{t:'Idiomas hoje',tone:'var(--lang)',icon:'globe',def:'s'},
+  hab:{t:'Hábitos de hoje',tone:'var(--hab)',icon:'target',def:'s'},
+  week:{t:'Sua semana em gráficos',tone:'var(--gray)',icon:'chart',def:'l'}};
+const WORDER=['agenda','pend','money','fin','idi','hab','week'];
+const SZN={s:'Pequeno',m:'Médio',l:'Largura toda'};
+function dashCfg(){
+  const d=cfg().dash&&typeof cfg().dash==='object'?cfg().dash:{};
+  const order=(Array.isArray(d.order)?d.order:[]).filter((k,i,a)=>WIDGETS[k]&&a.indexOf(k)===i);WORDER.forEach(k=>{if(!order.includes(k))order.push(k)});
+  const size={};for(const k in WIDGETS)size[k]=d.size&&['s','m','l'].includes(d.size[k])?d.size[k]:WIDGETS[k].def;
+  return{order,size,hide:Array.isArray(d.hide)?d.hide.filter(k=>WIDGETS[k]):[]};
+}
+function setDash(fn){const d=dashCfg();fn(d);cfg().dash={order:d.order,size:d.size,hide:d.hide};save('cfg');render()}
+const apOf=m=>(inv().ap||[]).filter(a=>a&&typeof a.d==='string'&&a.d.startsWith(m)).reduce((x,a)=>x+(+a.v||0),0);
+const WR={};
+WR.agenda=()=>{
+  const t=T(),evs=eventsOn(t),ws=weekStart(t),nm=nowMin();
   const strip=[0,1,2,3,4,5,6].map(i=>{const d=addD(ws,i),n=eventsOn(d).length+tasksDue(d).filter(x=>!x.done).length;return `<button class="wsd ${d===t?'td':''}" data-act="agday" data-day="${d}" aria-label="${fLong(d)}"><span>${WD[dow(d)]}</span><b>${pd(d).getDate()}</b><span class="dots">${'<i></i>'.repeat(Math.min(n,4))}</span></button>`}).join('');
-  const rows=evs.length?evs.map(e=>{
-    const st=mins(e.s);let en=e.e?mins(e.e):st+60;if(en<=st)en=1440;
-    const past=!e.all&&en<=nm,now=!e.all&&st<=nm&&nm<en;
-    return `<li><button class="tlr ${past?'past':''} ${now?'nowr':''}" data-act="evopen" data-id="${h(e.id)}" data-day="${t}"><span class="tl-t">${e.all?'Dia<small>inteiro</small>':h(e.s)+(e.e?`<small>até ${h(e.e)}</small>`:'')}</span><span class="tl-b"><b><i class="dot" style="--c:${cc(e.c)}"></i>${h(e.t)}</b><span class="mu">${now?'<em class="nowt">agora</em> · ':''}${cn(e.c)}${e.n?' · '+h(e.n):''}</span></span></button></li>`;
-  }).join(''):`<li class="empty">Nada marcado para hoje. <button class="lnk" data-act="evnew" data-day="${t}">Adicionar evento</button></li>`;
-  const tm=eventsOn(addD(t,1));
-  const pl=over.concat(wk).slice(0,7);
-  ensureIdi();const ib=blocksOn(t).filter(b=>b.lang!=='rest'),im=minOn(t),ip=planMin(t),isk=lStreak();
-  const idiC=`<section class="card o3"><header><h2>Idiomas hoje</h2><a class="lnk" href="#idiomas">Ver tudo</a></header><div class="mrow"><span><b>${Math.round(im.t)}</b> de ${ip} min</span><span class="mu">${isk?ic('flame')+' '+plural(isk,'dia','dias')+' seguidos':'sem sequência ainda'}</span></div><div class="bar" style="--c:var(--lang);margin:2px 0 8px"><i style="width:${ip?Math.min(100,im.t/ip*100).toFixed(1):0}%"></i></div>${ib.length?`<ul class="lbs">${ib.map(b=>{const lg=blockLog(b,t);return `<li class="lb ${lg?'done':''}"><button class="cb" data-act="ltog" data-id="${h(b.id)}" data-day="${t}" aria-label="${lg?'Desmarcar':'Marcar como feito'}">${lg?ic('check'):''}</button><button class="lbb" data-act="lgblk" data-id="${h(b.id)}" data-day="${t}"><span class="slot">${h(b.slot)}</span><b>${badge(b.lang)}<span>${h(shortAct(b.act))} · ${+b.min||0} min</span></b></button></li>`}).join('')}</ul>`:'<p class="empty">Hoje é dia de descanso dos idiomas.</p>'}<div class="opts" style="margin-top:10px"><button class="btn sm ghost" data-act="l5" data-l="en"><span class="badge en">EN</span>5 min</button><button class="btn sm ghost" data-act="l5" data-l="es"><span class="badge es">ES</span>5 min</button></div></section>`;
-  const d7=[6,5,4,3,2,1,0].map(i=>addD(t,-i)),m7=d7.map(minOn),s7=m7.reduce((a,m)=>a+m.t,0);
+  const rows=evs.length?evs.map(e=>{const st=mins(e.s);let en=e.e?mins(e.e):st+60;if(en<=st)en=1440;const past=!e.all&&en<=nm,now=!e.all&&st<=nm&&nm<en;
+    return `<li><button class="tlr ${past?'past':''} ${now?'nowr':''}" data-act="evopen" data-id="${h(e.id)}" data-day="${t}"><span class="tl-t">${e.all?'Dia<small>inteiro</small>':h(e.s)+(e.e?`<small>até ${h(e.e)}</small>`:'')}</span><span class="tl-b"><b><i class="dot" style="--c:${cc(e.c)}"></i>${h(e.t)}</b><span class="mu">${now?'<em class="nowt">agora</em> · ':''}${cn(e.c)}${e.n?' · '+h(e.n):''}</span></span></button></li>`}).join('')
+    :`<li class="empty">Nada marcado para hoje. <button class="lnk" data-act="evnew" data-day="${t}">Adicionar evento</button></li>`;
+  const nx=[1,2,3].map(i=>{const d=addD(t,i),ev=eventsOn(d);return `<button class="nxd" data-act="agday" data-day="${d}"><b>${i===1?'Amanhã':cap(WDF[dow(d)])}</b><span>${ev.length?ev.slice(0,3).map(e=>(e.all?'':h(e.s)+' ')+h(e.t)).join(' · ')+(ev.length>3?' …':''):'livre'}</span></button>`}).join('');
+  return{links:'<button class="lnk" data-act="goag">Ver semana</button>',body:`<div class="wstrip">${strip}</div><ul class="tl">${rows}</ul><div class="nxt"><h4>Próximos dias</h4>${nx}</div>`};
+};
+WR.pend=()=>{
+  const t=T(),pend=pendAll(),over=pend.filter(p=>p.due&&p.due<t),wk=pend.filter(p=>p.due&&p.due>=t&&dd(t,p.due)<7),pl=over.concat(wk).slice(0,8);
+  return{links:'<a class="lnk" href="#faculdade">Faculdade</a><a class="lnk" href="#trabalho">Trabalho</a>',body:pl.length?`<ul class="tks">${pl.map(tkRow).join('')}</ul>`:'<p class="empty">Nada pendente para os próximos 7 dias.</p>'};
+};
+WR.money=()=>{
+  const t=T(),m=t.slice(0,7),s=sums(txMonth(m)),ap=apOf(m),iv=invTot(),bud=+cfg().budget||0,bp=bud?s.o/bud*100:0,free=s.i-s.o-ap,rate=s.i>0?ap/s.i*100:0;
+  return{links:'<a class="lnk" href="#financas">Detalhes</a>',body:`<div class="mstats">
+  <div class="mst"><span>Gastos</span><b>${R(s.o)}</b>${bud?`<div class="bar thin" style="--c:${bp>100?'var(--bad)':bp>85?'var(--fac)':'var(--fin)'}"><i style="width:${Math.min(100,bp).toFixed(1)}%"></i></div><small class="${bp>100?'late':''}">${Math.round(bp)}% do orçamento</small>`:'<small>sem orçamento definido</small>'}</div>
+  <div class="mst"><span>Investido no mês</span><b class="pos">${R(ap)}</b><small>${s.i>0?Math.round(rate)+'% do que entrou':'aportes deste mês'}</small></div>
+  <div class="mst"><span>Sobra do mês</span><b class="${free<0?'neg':''}">${R(free)}</b><small>entradas ${R(s.i)}</small></div>
+  <div class="mst"><span>Patrimônio investido</span><b>${R(iv.cur)}</b><small class="${iv.g>=0?'pos':'neg'}">${iv.ap?pct(iv.p)+' de rendimento':'cadastre em Finanças'}</small></div></div>
+  ${(()=>{const byc={};txMonth(m).filter(x=>x.k!=='in').forEach(x=>{byc[x.cat||'Outros']=(byc[x.cat||'Outros']||0)+(+x.v||0)});const cs=Object.entries(byc).sort((a,b)=>b[1]-a[1]).slice(0,4);return cs.length?`<div class="nxt"><h4>Maiores gastos do mês</h4>${cs.map(([k,v])=>`<div class="skr"><span><i class="dot" style="--c:${catCol('out',k)}"></i>${h(k)}</span><div class="bar thin"><i style="width:${(v/cs[0][1]*100).toFixed(1)}%;--c:${catCol('out',k)}"></i></div><b>${R(v)}</b></div>`).join('')}</div>`:''})()}
+  <div class="opts" style="margin-top:14px"><button class="btn sm ghost" data-act="txnew">${ic('plus')}Lançar gasto</button><button class="btn sm ghost" data-act="apnew">${ic('plus')}Aportar</button></div>`};
+};
+WR.fin=()=>{
+  const t=T(),m=t.slice(0,7),M=[-5,-4,-3,-2,-1,0].map(k=>{const mm=addM(m,k);return{mm,...sums(txMonth(mm)),ap:apOf(mm)}});
+  const tg=M.reduce((a,x)=>a+x.o,0),ta=M.reduce((a,x)=>a+x.ap,0),ti=M.reduce((a,x)=>a+x.i,0);
+  const hist=(inv().hist||[]).filter(x=>x&&typeof x.d==='string').sort((a,b)=>a.d.localeCompare(b.d)).slice(-24);
+  const mn=x=>MOF[pd(x.mm+'-01').getMonth()];
+  const cols=fig({type:'cols',cats:M.map(x=>MO[pd(x.mm+'-01').getMonth()]),hi:5,series:[{name:'Gastos',color:'var(--trab)',vals:M.map(x=>x.o)},{name:'Investido',color:'var(--fin)',vals:M.map(x=>Math.max(0,x.ap))}],fmt:kfmt,label:'Gastos e valor investido por mês',tip:i=>`<b>${cap(mn(M[i]))}</b>`+tipRow('var(--trab)','Gastos',R(M[i].o))+tipRow('var(--fin)','Investido',R(M[i].ap))+tipRow('var(--mu)','Entradas',R(M[i].i)),aria:i=>`${mn(M[i])}: gastos ${R(M[i].o)}, investido ${R(M[i].ap)}`},210);
+  const line=hist.length>=2?fig({type:'line',color:'var(--fin)',pts:hist.map(x=>({t:pd(x.d).getTime(),v:+x.cur||0,lab:pd(x.d).getDate()+' '+MO[pd(x.d).getMonth()]})),fmt:kfmt,label:'Evolução do patrimônio investido',tip:i=>`<b>${R(hist[i].cur)}</b><span>${fShort(hist[i].d)} · aplicado ${R(hist[i].ap)}</span>`},210):'<p class="hint" style="margin:8px 0 0">A curva do patrimônio aparece depois de duas atualizações dos investimentos.</p>';
+  return{links:'<a class="lnk" href="#financas">Finanças</a>',body:`<p class="sub" style="margin:0 0 8px">Em 6 meses: gastou ${R(tg)} e investiu ${R(ta)}${ti>0?` (${Math.round(ta/ti*100)}% do que entrou)`:''}.</p><div class="fin2"><div>${cols}<div class="legend"><span><i style="--c:var(--trab)"></i>Gastos</span><span><i style="--c:var(--fin)"></i>Investido</span></div></div><div class="finl"><h4>Patrimônio investido</h4>${line}</div></div>`};
+};
+WR.idi=()=>{
+  ensureIdi();const t=T(),ib=blocksOn(t).filter(b=>b.lang!=='rest'),im=minOn(t),ip=planMin(t),isk=lStreak();
+  return{links:'<a class="lnk" href="#idiomas">Ver tudo</a>',body:`<div class="mrow"><span><b>${Math.round(im.t)}</b> de ${ip} min</span><span class="mu">${isk?ic('flame')+' '+plural(isk,'dia','dias')+' seguidos':'sem sequência ainda'}</span></div><div class="bar" style="--c:var(--lang);margin:2px 0 8px"><i style="width:${ip?Math.min(100,im.t/ip*100).toFixed(1):0}%"></i></div>${ib.length?`<ul class="lbs">${ib.map(b=>{const lg=blockLog(b,t);return `<li class="lb ${lg?'done':''}"><button class="cb" data-act="ltog" data-id="${h(b.id)}" data-day="${t}" aria-label="${lg?'Desmarcar':'Marcar como feito'}">${lg?ic('check'):''}</button><button class="lbb" data-act="lgblk" data-id="${h(b.id)}" data-day="${t}"><span class="slot">${h(b.slot)}</span><b>${badge(b.lang)}<span>${h(shortAct(b.act))} · ${+b.min||0} min</span></b></button></li>`}).join('')}</ul>`:'<p class="empty">Hoje é dia de descanso dos idiomas.</p>'}<div class="opts" style="margin-top:10px"><button class="btn sm ghost" data-act="l5" data-l="en"><span class="badge en">EN</span>5 min</button><button class="btn sm ghost" data-act="l5" data-l="es"><span class="badge es">ES</span>5 min</button></div>`};
+};
+WR.hab=()=>{
+  const t=T(),H=hab().habits;
+  return{links:'<a class="lnk" href="#habitos">Ver tudo</a>',body:H.length?`<div class="hpills">${H.map(x=>{const on=isDone(x.id,t);return `<button class="hp ${on?'on':''}" style="--c:${col(x.color)}" data-act="htog" data-id="${h(x.id)}" data-day="${t}" aria-pressed="${on}"><span class="ck">${on?ic('check'):''}</span>${h(x.name)}</button>`}).join('')}</div><div class="nxt"><h4>Meta da semana</h4>${H.map(x=>{const g=+x.goal||7,wc=weekCount(x.id,weekStart(t));return `<div class="skr"><span><i class="dot" style="--c:${col(x.color)}"></i>${h(x.name)}</span><div class="bar thin"><i style="width:${Math.min(100,wc/g*100).toFixed(1)}%;--c:${col(x.color)}"></i></div><b>${wc}/${g}</b></div>`}).join('')}</div>`:'<p class="empty">Nenhum hábito ainda. <button class="lnk" data-act="habnew">Criar hábito</button></p>'};
+};
+WR.week=()=>{
+  const t=T(),H=hab().habits,d7=[6,5,4,3,2,1,0].map(i=>addD(t,-i)),m7=d7.map(minOn),s7=m7.reduce((a,m)=>a+m.t,0),wcats=d7.map(d=>WD[dow(d)]);
   const hp=d7.map(d=>H.length?H.filter(x=>isDone(x.id,d)).length/H.length*100:0),hpa=H.length?hp.reduce((a,v)=>a+v,0)/7:0;
   const fd7=d7.map(d=>facul().tasks.filter(x=>x.done&&x.doneAt===d).length),td7=d7.map(d=>trab().tasks.filter(x=>x.st==='done'&&x.doneAt===d).length),dn7=fd7.reduce((a,v)=>a+v,0)+td7.reduce((a,v)=>a+v,0);
-  const wcats=d7.map(d=>WD[dow(d)]);
-  const chartsC=`<section class="card" style="margin-top:16px"><header><h2>Sua semana em gráficos</h2><span class="mu" style="font-size:13px">últimos 7 dias</span></header><div class="chartgrid">
-  <div class="mini"><h4>Idiomas</h4><p>${Math.round(s7)} min estudados</p>${fig({type:'cols',stack:true,cats:wcats,hi:6,int:true,series:[{name:'Inglês',color:'var(--en)',vals:m7.map(m=>m.en)},{name:'Espanhol',color:'var(--es)',vals:m7.map(m=>m.es)}],target:d7.map(planMin),fmt:v=>String(Math.round(v)),label:'Minutos de idiomas por dia',tip:i=>`<b>${Math.round(m7[i].t)} min</b><span>${fShort(d7[i])} · meta ${planMin(d7[i])} min</span>`+tipRow('var(--en)','Inglês',Math.round(m7[i].en)+' min')+tipRow('var(--es)','Espanhol',Math.round(m7[i].es)+' min')},160)}<div class="legend"><span><i style="--c:var(--en)"></i>Inglês</span><span><i style="--c:var(--es)"></i>Espanhol</span><span><i class="lk"></i>Meta</span></div></div>
-  <div class="mini"><h4>Hábitos</h4><p>${H.length?Math.round(hpa)+'% feitos, em média':'Nenhum hábito ainda'}</p>${fig({type:'cols',cats:wcats,hi:6,max:100,series:[{name:'Hábitos feitos',color:'var(--hab)',vals:hp}],fmt:v=>Math.round(v)+'%',label:'Porcentagem de hábitos feitos por dia',tip:i=>`<b>${Math.round(hp[i])}%</b><span>${fShort(d7[i])} · ${H.filter(x=>isDone(x.id,d7[i])).length} de ${H.length} hábitos</span>`},160)}</div>
-  <div class="mini"><h4>Pendências concluídas</h4><p>${plural(dn7,'concluída','concluídas')}</p>${fig({type:'cols',stack:true,int:true,cats:wcats,hi:6,series:[{name:'Faculdade',color:'var(--c4)',vals:fd7},{name:'Trabalho',color:'var(--trab)',vals:td7}],fmt:v=>String(Math.round(v)),label:'Pendências concluídas por dia',tip:i=>`<b>${fd7[i]+td7[i]}</b><span>${fShort(d7[i])}</span>`+tipRow('var(--c4)','Faculdade',fd7[i])+tipRow('var(--trab)','Trabalho',td7[i])},160)}<div class="legend"><span><i style="--c:var(--c4)"></i>Faculdade</span><span><i style="--c:var(--trab)"></i>Trabalho</span></div></div>
-  </div></section>`;
-  const bud=+c.budget||0,bp=bud?s.o/bud*100:0;
-  o+=`<div class="dash"><div class="colst"><section class="card o1"><header><h2>Agenda de hoje</h2><button class="lnk" data-act="goag">Ver semana</button></header><div class="wstrip">${strip}</div><ul class="tl">${rows}</ul>${tm.length?`<p class="tmr"><b>Amanhã:</b> ${tm.slice(0,3).map(e=>(e.all?'':h(e.s)+' ')+h(e.t)).join(' · ')}${tm.length>3?' …':''}</p>`:''}</section>${idiC}<section class="card o5"><header><h2>Dinheiro em ${MOF[new Date().getMonth()]}</h2><a class="lnk" href="#financas">Detalhes</a></header><div class="msplit"><div><span class="mu">Saldo do mês</span><b class="big ${s.s<0?'neg':''}">${R(s.s)}</b></div><div><span class="mu">Investido</span><b class="big">${R(iv.cur)}</b>${iv.ap?`<small class="${iv.g>=0?'pos':'neg'}">${pct(iv.p)} no total</small>`:''}</div></div><div class="mrow"><span>Entradas</span><b class="pos">${R(s.i)}</b></div><div class="mrow"><span>Saídas</span><b>${R(s.o)}</b></div>${bud?`<div class="mrow"><span>Orçamento</span><b>${Math.round(bp)}% de ${R(bud)}</b></div><div class="bar" style="--c:${bp>100?'var(--bad)':bp>85?'var(--fac)':'var(--fin)'}"><i style="width:${Math.min(100,bp)}%"></i></div>`:''}</section></div><div class="colst">
-  <section class="card o2"><header><h2>Pendências</h2><a class="lnk" href="#faculdade">Faculdade</a><a class="lnk" href="#trabalho">Trabalho</a></header>${pl.length?`<ul class="tks">${pl.map(tkRow).join('')}</ul>`:`<p class="empty">Nada pendente para os próximos 7 dias.</p>`}</section>
-  <section class="card o4"><header><h2>Hábitos de hoje</h2><a class="lnk" href="#habitos">Ver tudo</a></header>${H.length?`<div class="hpills">${H.map(x=>{const on=isDone(x.id,t);return `<button class="hp ${on?'on':''}" style="--c:${col(x.color)}" data-act="htog" data-id="${h(x.id)}" data-day="${t}" aria-pressed="${on}"><span class="ck">${on?ic('check'):''}</span>${h(x.name)}</button>`}).join('')}</div>`:`<p class="empty">Nenhum hábito ainda. <button class="lnk" data-act="habnew">Criar hábito</button></p>`}</section>
-
-  </div></div>${chartsC}`;
+  const g7=d7.map(d=>txMonth(d.slice(0,7)).filter(x=>x.k!=='in'&&x.d===d).reduce((a,x)=>a+(+x.v||0),0)),sg7=g7.reduce((a,v)=>a+v,0);
+  return{links:'<span class="mu" style="font-size:13px">últimos 7 dias</span>',body:`<div class="chartgrid">
+  <div class="mini"><h4>Idiomas</h4><p>${Math.round(s7)} min estudados</p>${fig({type:'cols',stack:true,cats:wcats,hi:6,int:true,series:[{name:'Inglês',color:'var(--en)',vals:m7.map(m=>m.en)},{name:'Espanhol',color:'var(--es)',vals:m7.map(m=>m.es)}],target:d7.map(planMin),fmt:v=>String(Math.round(v)),label:'Minutos de idiomas por dia',tip:i=>`<b>${Math.round(m7[i].t)} min</b><span>${fShort(d7[i])} · meta ${planMin(d7[i])} min</span>`+tipRow('var(--en)','Inglês',Math.round(m7[i].en)+' min')+tipRow('var(--es)','Espanhol',Math.round(m7[i].es)+' min')},150)}<div class="legend"><span><i style="--c:var(--en)"></i>Inglês</span><span><i style="--c:var(--es)"></i>Espanhol</span><span><i class="lk"></i>Meta</span></div></div>
+  <div class="mini"><h4>Hábitos</h4><p>${H.length?Math.round(hpa)+'% feitos, em média':'Nenhum hábito ainda'}</p>${fig({type:'cols',cats:wcats,hi:6,max:100,series:[{name:'Hábitos feitos',color:'var(--hab)',vals:hp}],fmt:v=>Math.round(v)+'%',label:'Porcentagem de hábitos feitos por dia',tip:i=>`<b>${Math.round(hp[i])}%</b><span>${fShort(d7[i])} · ${H.filter(x=>isDone(x.id,d7[i])).length} de ${H.length} hábitos</span>`},150)}</div>
+  <div class="mini"><h4>Gastos do dia a dia</h4><p>${R(sg7)} na semana</p>${fig({type:'cols',cats:wcats,hi:6,series:[{name:'Gastos',color:'var(--trab)',vals:g7}],fmt:kfmt,label:'Gastos por dia',tip:i=>`<b>${R(g7[i])}</b><span>${fShort(d7[i])}</span>`},150)}</div>
+  <div class="mini"><h4>Pendências concluídas</h4><p>${plural(dn7,'concluída','concluídas')}</p>${fig({type:'cols',stack:true,int:true,cats:wcats,hi:6,series:[{name:'Faculdade',color:'var(--c4)',vals:fd7},{name:'Trabalho',color:'var(--c3)',vals:td7}],fmt:v=>String(Math.round(v)),label:'Pendências concluídas por dia',tip:i=>`<b>${fd7[i]+td7[i]}</b><span>${fShort(d7[i])}</span>`+tipRow('var(--c4)','Faculdade',fd7[i])+tipRow('var(--c3)','Trabalho',td7[i])},150)}<div class="legend"><span><i style="--c:var(--c4)"></i>Faculdade</span><span><i style="--c:var(--c3)"></i>Trabalho</span></div></div>
+  </div>`};
+};
+VR.hoje=()=>{
+  const t=T(),c=cfg(),evs=eventsOn(t),pend=pendAll(),H=hab().habits,ed=!!ui.dashEdit,dc=dashCfg();
+  const over=pend.filter(p=>p.due&&p.due<t),wk=pend.filter(p=>p.due&&p.due>=t&&dd(t,p.due)<7),hd=H.filter(x=>isDone(x.id,t)).length;
+  let o='';
+  if(c.sample)o+=`<div class="note"><span>Este é um exemplo preenchido para você explorar. Quando quiser, apague e comece com os seus dados.</span><button class="btn sm ghost" data-act="reset">Apagar exemplo</button></div>`;
+  o+=`<div class="dtop"><div class="stats">${stat(plural(evs.length,'compromisso hoje','compromissos hoje'),'var(--ag)')}${stat(plural(wk.length,'pendência nos próximos 7 dias','pendências nos próximos 7 dias'),'var(--fac)')}${over.length?stat(plural(over.length,'atrasada','atrasadas'),'var(--bad)'):''}${H.length?stat(hd+' de '+H.length+' hábitos feitos','var(--hab)'):''}</div><button class="btn sm ${ed?'':'ghost'}" data-act="dedit" aria-pressed="${ed}">${ic(ed?'check':'sliders')}${ed?'Concluir':'Personalizar'}</button></div>`;
+  if(ed)o+=`<div class="dedit"><p><b>Personalizando a página.</b> Use as setas (ou arraste, no computador) para mudar a ordem, e P, M e G para o tamanho: pequeno, médio ou largura toda. No celular os blocos ficam um embaixo do outro. Vale para todos os seus aparelhos.</p><div class="opts">${dc.hide.map(k=>`<button class="btn sm ghost" data-act="wshow" data-w="${k}">${ic('plus')}${WIDGETS[k].t}</button>`).join('')}<button class="btn sm ghost" data-act="wreset">Restaurar padrão</button></div></div>`;
+  const vis=dc.order.filter(k=>!dc.hide.includes(k));
+  o+=`<div class="dgrid ${ed?'editing':''}">${vis.map((k,i)=>{
+    const W=WIDGETS[k],sz=dc.size[k];let r;try{r=WR[k]()}catch(e){console.error(e);r={links:'',body:'<p class="empty">Não foi possível mostrar este bloco.</p>'}}
+    const bar=ed?`<div class="wbar"><button class="iconbtn" data-act="wmv" data-w="${k}" data-d="-1" aria-label="Mover ${W.t} para antes" ${i===0?'disabled':''}>${ic('up')}</button><button class="iconbtn" data-act="wmv" data-w="${k}" data-d="1" aria-label="Mover ${W.t} para depois" ${i===vis.length-1?'disabled':''}>${ic('down')}</button><span class="sp"></span><div class="seg" role="group" aria-label="Tamanho">${['s','m','l'].map(z=>`<button class="${sz===z?'on':''}" data-act="wsz" data-w="${k}" data-z="${z}" aria-label="${SZN[z]}" aria-pressed="${sz===z}">${z==='s'?'P':z==='m'?'M':'G'}</button>`).join('')}</div><button class="iconbtn" data-act="whide" data-w="${k}" aria-label="Ocultar ${W.t}">${ic('eyeoff')}</button></div>`:'';
+    return `<section class="card w w-${sz}" style="--tone:${W.tone}${W.on?';--ton:'+W.on:''}" data-wid="${k}" ${ed?`draggable="true" data-wdrag="${k}"`:''}>${bar}<header><span class="wi">${ic(W.icon)}</span><h2>${W.t}</h2>${ed?'':r.links}</header><div class="wc">${r.body}</div></section>`;
+  }).join('')}</div>`;
+  if(!vis.length)o+=`<p class="empty">Todos os blocos estão ocultos. Toque em “Personalizar” para mostrar de novo.</p>`;
   return o;
 };
 function hrange(days){
@@ -876,9 +966,9 @@ VR.financas=()=>{
   <p class="sub">${h(find)}</p>
   <div class="kpis"><div class="kpi hero ${s.s<0?'neg':''}"><span>Saldo do mês</span><b>${R(s.s)}</b><small>entradas − saídas</small></div><div class="kpi"><span>Entradas</span><b class="pos">${R(s.i)}</b><small>${plural(list.filter(x=>x.k==='in').length,'lançamento','lançamentos')}</small></div><div class="kpi"><span>Saídas</span><b>${R(s.o)}</b><small>${bud?Math.round(bp)+'% do orçamento':plural(list.filter(x=>x.k!=='in').length,'lançamento','lançamentos')}</small></div><div class="kpi"><span>Investido hoje</span><b>${R(iv.cur)}</b><small class="${iv.g>=0?'pos':'neg'}">${iv.ap?(iv.g>=0?'+':'−')+' '+R(Math.abs(iv.g))+' ('+pct(iv.p)+')':'cadastre abaixo'}</small></div></div>
   <div class="g2"><section class="card"><header><h3>Para onde foi o dinheiro</h3></header>${bud?`<div class="cbar"><span><b>Orçamento do mês</b></span><b>${R(s.o)} de ${R(bud)}</b><div class="bar" style="--c:${bp>100?'var(--bad)':bp>85?'var(--fac)':'var(--fin)'}"><i style="width:${Math.min(100,bp)}%"></i></div></div>`:''}${cats.length?cats.map(([k,v])=>`<div class="cbar"><span><i class="dot" style="--c:${catCol('out',k)}"></i>${h(k)}</span><b>${R(v)} <span class="mu">· ${Math.round(v/s.o*100)}%</span></b><div class="bar" style="--c:${catCol('out',k)}"><i style="width:${v/cats[0][1]*100}%"></i></div></div>`).join(''):'<p class="empty">Sem gastos neste mês.</p>'}</section>
-  <section class="card"><header><h3>Últimos 6 meses</h3></header>${fig({type:'cols',cats:m6.map(x=>MO[pd(x.mm+'-01').getMonth()]),hi:5,series:[{name:'Entradas',color:'var(--fin)',vals:m6.map(x=>x.i)},{name:'Saídas',color:'var(--trab)',vals:m6.map(x=>x.o)}],fmt:kfmt,label:'Entradas e saídas por mês',tip:i=>`<b>${R(m6[i].i-m6[i].o)}</b><span>saldo de ${MOF[pd(m6[i].mm+'-01').getMonth()]}</span>`+tipRow('var(--fin)','Entradas',R(m6[i].i))+tipRow('var(--trab)','Saídas',R(m6[i].o)),aria:i=>`${MOF[pd(m6[i].mm+'-01').getMonth()]}: entradas ${R(m6[i].i)}, saídas ${R(m6[i].o)}`},210)}<div class="legend"><span><i style="--c:var(--fin)"></i>Entradas</span><span><i style="--c:var(--trab)"></i>Saídas</span></div></section></div>
+  <section class="card"><header><h3>Últimos 6 meses</h3></header>${fig({type:'cols',cats:m6.map(x=>MO[pd(x.mm+'-01').getMonth()]),hi:5,series:[{name:'Entradas',color:'var(--fin)',vals:m6.map(x=>x.i)},{name:'Saídas',color:'var(--trab)',vals:m6.map(x=>x.o)},{name:'Investido',color:'var(--c1)',vals:m6.map(x=>Math.max(0,apOf(x.mm)))}],fmt:kfmt,label:'Entradas, saídas e valor investido por mês',tip:i=>`<b>${R(m6[i].i-m6[i].o)}</b><span>saldo de ${MOF[pd(m6[i].mm+'-01').getMonth()]}</span>`+tipRow('var(--fin)','Entradas',R(m6[i].i))+tipRow('var(--trab)','Saídas',R(m6[i].o))+tipRow('var(--c1)','Investido',R(apOf(m6[i].mm))),aria:i=>`${MOF[pd(m6[i].mm+'-01').getMonth()]}: entradas ${R(m6[i].i)}, saídas ${R(m6[i].o)}`},210)}<div class="legend"><span><i style="--c:var(--fin)"></i>Entradas</span><span><i style="--c:var(--trab)"></i>Saídas</span><span><i style="--c:var(--c1)"></i>Investido</span></div></section></div>
   <section class="card" style="margin-bottom:16px"><header><h3>Transações</h3><div class="seg">${[['all','Todas'],['in','Entradas'],['out','Saídas']].map(([k,n])=>`<button class="${ui.finF===k?'on':''}" data-act="finf" data-f="${k}">${n}</button>`).join('')}</div><button class="btn sm" data-act="txnew">${ic('plus')}Lançar</button></header>${txh||'<p class="empty">Nada por aqui neste mês.</p>'}</section>
-  <section class="card"><header><h3>Investimentos</h3><button class="btn sm" data-act="invnew">${ic('plus')}Investimento</button></header>${items.length?`<div class="g2" style="margin-bottom:6px"><div><h4 style="margin:0 0 4px;font-size:15px">Como está dividido</h4>${segbar(tE.map(([k,v])=>({name:k,v,c:ityCol(k),tc:['Renda fixa (CDB/LCI/LCA)','Ações','FIIs'].includes(k)?'#1a1206':'#fff'})),R)}</div><div><h4 style="margin:0 0 4px;font-size:15px">Evolução do total investido</h4>${hist.length>=2?fig({type:'line',color:'var(--fin)',pts:hist.map(x=>({t:pd(x.d).getTime(),v:+x.cur||0,lab:pd(x.d).getDate()+' '+MO[pd(x.d).getMonth()]})),fmt:kfmt,label:'Evolução do patrimônio investido',tip:i=>`<b>${R(hist[i].cur)}</b><span>${fShort(hist[i].d)} · aplicado ${R(hist[i].ap)}</span>`},170):'<p class="hint">O gráfico aparece a partir da segunda vez que você atualizar os valores.</p>'}</div></div>
+  <section class="card"><header><h3>Investimentos</h3><span class="mu" style="font-size:13.5px">aportes em ${MOF[mi]}: <b style="color:var(--ink)">${R(apOf(m))}</b></span>${items.length?`<button class="btn sm ghost" data-act="apnew">${ic('plus')}Aportar</button>`:''}<button class="btn sm" data-act="invnew">${ic('plus')}Investimento</button></header>${items.length?`<div class="g2" style="margin-bottom:6px"><div><h4 style="margin:0 0 4px;font-size:15px">Como está dividido</h4>${segbar(tE.map(([k,v])=>({name:k,v,c:ityCol(k),tc:['Renda fixa (CDB/LCI/LCA)','Ações','FIIs'].includes(k)?'#1a1206':'#fff'})),R)}</div><div><h4 style="margin:0 0 4px;font-size:15px">Evolução do total investido</h4>${hist.length>=2?fig({type:'line',color:'var(--fin)',pts:hist.map(x=>({t:pd(x.d).getTime(),v:+x.cur||0,lab:pd(x.d).getDate()+' '+MO[pd(x.d).getMonth()]})),fmt:kfmt,label:'Evolução do patrimônio investido',tip:i=>`<b>${R(hist[i].cur)}</b><span>${fShort(hist[i].d)} · aplicado ${R(hist[i].ap)}</span>`},170):'<p class="hint">O gráfico aparece a partir da segunda vez que você atualizar os valores.</p>'}</div></div>
   <table class="stack"><thead><tr><th>Investimento</th><th>Tipo</th><th class="num">Aplicado</th><th class="num">Valor atual</th><th class="num">Rendimento</th></tr></thead><tbody>${items.map(x=>{const g=(+x.current||0)-(+x.applied||0),p=+x.applied?g/x.applied*100:0;return `<tr data-act="invopen" data-id="${h(x.id)}"><td><b>${h(x.name)}</b></td><td>${h(x.type||'')}</td><td class="num">${R(x.applied)}</td><td class="num">${R(x.current)}</td><td class="num ${g>=0?'pos':'neg'}">${R(g)} (${pct(p)})</td></tr>`}).join('')}</tbody><tfoot><tr><td>Total</td><td></td><td class="num">${R(iv.ap)}</td><td class="num">${R(iv.cur)}</td><td class="num ${iv.g>=0?'pos':'neg'}">${R(iv.g)} (${pct(iv.p)})</td></tr></tfoot></table><p class="hint" style="margin:10px 0 0">Toque num investimento para atualizar o valor atual.</p>`:'<p class="empty">Cadastre seus investimentos (reserva, Tesouro, CDB, ações…) para acompanhar o total e o rendimento.</p>'}</section>`;
 };
 VR.faculdade=()=>{
@@ -1083,6 +1173,15 @@ VR.idiomas=()=>{
   <div class="g2">${heatC}${skC}</div>
   <div class="lgrid"><div class="colst">${cron}</div><div class="colst">${voc}${rules}</div></div>`;
 };
+function apForm(itId){
+  const L=inv().items;if(!L.length){toast('Cadastre primeiro um investimento.');return invForm()}
+  open(`<form data-form="ap" data-k="ap"><h2>Aportar ou resgatar</h2>
+  <div class="opts" style="margin-bottom:14px">${[['ap','Aporte','var(--fin)'],['rs','Resgate','var(--trab)']].map(([v,n,c])=>`<label class="opt" style="--c:${c}"><input type="radio" name="k" value="${v}" ${v==='ap'?'checked':''}><span>${n}</span></label>`).join('')}</div>
+  <label class="fld"><span>Investimento</span><select name="it">${L.map(x=>`<option value="${h(x.id)}" ${x.id===itId?'selected':''}>${h(x.name)}</option>`).join('')}</select></label>
+  <div class="row2"><label class="fld"><span>Valor (R$)</span><input type="text" inputmode="decimal" name="v" required placeholder="0,00" autocomplete="off"></label><label class="fld"><span>Data</span><input type="date" name="d" required value="${T()}" max="${T()}"></label></div>
+  <p class="hint">O valor entra (ou sai) do total aplicado e do valor atual do investimento, e aparece no gráfico de gastos x investimentos.</p>
+  <div class="acts"><button type="button" class="btn ghost" data-act="mclose">Cancelar</button><button class="btn">Salvar</button></div></form>`);
+}
 function blockForm(id){
   const b=id?idi().plan.find(x=>x.id===id):null;if(id&&!b)return;
   const ds=b?(b.days||[]):[1,2,3,4],lg=b?b.lang:'en';
@@ -1216,7 +1315,7 @@ function invForm(id){
   <label class="fld"><span>Nome</span><input type="text" name="name" required maxlength="80" value="${h(x?x.name:'')}" placeholder="Ex.: Tesouro Selic 2029" autocomplete="off"></label>
   <label class="fld"><span>Tipo</span><select name="type">${ITY.map(t=>`<option ${x&&x.type===t?'selected':''}>${t}</option>`).join('')}</select></label>
   <div class="row2"><label class="fld"><span>Total aplicado (R$)</span><input type="text" inputmode="decimal" name="applied" required value="${x?mfmt(x.applied):''}" placeholder="0,00"></label><label class="fld"><span>Valor atual (R$)</span><input type="text" inputmode="decimal" name="current" value="${x?mfmt(x.current):''}" placeholder="igual ao aplicado"></label></div>
-  ${x&&x.up?`<p class="hint">Última atualização: ${fShort(x.up)}</p>`:''}
+  ${x&&x.up?`<p class="hint">Última atualização: ${fShort(x.up)}. Para registrar dinheiro novo, use “Aportar”.</p>`:'<label class="tog"><input type="checkbox" name="isap"> Apliquei esse valor agora (conta como aporte de hoje)</label>'}
   ${actsRow(!!x,'inv',id)}</form>`);
 }
 function habForm(id){
@@ -1264,7 +1363,7 @@ function startForm(){
 function welcome(){if(GH.token)startForm();else ghForm(true)}
 let qrP=null;
 const loadQR=()=>qrP||(qrP=new Promise((res,rej)=>{if(window.qrcode)return res();const sc=document.createElement('script');sc.src='qrcode.js';sc.onload=res;sc.onerror=()=>{qrP=null;rej()};document.head.appendChild(sc)}));
-function quickAdd(){open(`<h2>Adicionar</h2><div class="qa">${[['evnew','Evento na agenda','cal','ag'],['facnew','Pendência da faculdade','cap','fac'],['trabnew','Pendência do trabalho','case','trab'],['txnew','Gasto ou entrada de dinheiro','wallet','fin'],['lgnew','Estudo de idioma','globe','lang'],['habnew','Novo hábito','target','hab']].map(([a,n,i,c])=>`<button class="qab" data-act="${a}" style="--c:var(--${c})"><i>${ic(i)}</i>${n}</button>`).join('')}</div>`)}
+function quickAdd(){open(`<h2>Adicionar</h2><div class="qa">${[['evnew','Evento na agenda','cal','ag'],['facnew','Pendência da faculdade','cap','fac'],['trabnew','Pendência do trabalho','case','trab'],['txnew','Gasto ou entrada de dinheiro','wallet','fin'],['lgnew','Estudo de idioma','globe','lang'],['apnew','Aporte em investimento','chart','fin'],['habnew','Novo hábito','target','hab']].map(([a,n,i,c])=>`<button class="qab" data-act="${a}" style="--c:var(--${c})"><i>${ic(i)}</i>${n}</button>`).join('')}</div>`)}
 
 /* ---------- submit handlers ---------- */
 const SUB={};
@@ -1306,7 +1405,7 @@ SUB.inv=fd=>{
   if(!(ap>=0))return toast('Informe o valor aplicado.');if(!(cur>=0))cur=ap;
   const L=inv().items,id=fd.get('id'),o={name:str(fd,'name'),type:ITY.includes(fd.get('type'))?fd.get('type'):'Outros',applied:ap,current:cur,up:T()};
   if(!o.name)return;
-  if(id){const x=L.find(i=>i.id===id);if(x)Object.assign(x,o)}else L.push(Object.assign({id:nid()},o));
+  if(id){const x=L.find(i=>i.id===id);if(x)Object.assign(x,o)}else{const nx=Object.assign({id:nid()},o);L.push(nx);if(fd.get('isap')&&ap>0)inv().ap.push({id:nid(),d:T(),v:ap,it:nx.id})}
   invSnap();save('inv');fin('Investimento salvo');
 };
 SUB.blk=fd=>{
@@ -1332,6 +1431,12 @@ SUB.voc=fd=>{
 SUB.vocq=(fd,f)=>{
   const I=idi(),o={id:nid(),d:T(),lang:fd.get('lang')==='es'?'es':'en',w:str(fd,'w'),tr:str(fd,'tr'),ex:'',src:''};if(!o.w)return;
   I.vocab.push(o);ui.vlang=o.lang;saveUi();save('idi');refocus='form[data-form=vocq] input[name=w]';render();toast('“'+o.w+'” anotada');
+};
+SUB.ap=fd=>{
+  const v=parseMoney(fd.get('v'));if(!(v>0))return toast('Informe um valor maior que zero.');
+  const I=inv(),x=I.items.find(i=>i.id===fd.get('it'));if(!x)return;const sg=fd.get('k')==='rs'?-1:1,d=/^\d{4}-\d{2}-\d{2}$/.test(fd.get('d')||'')&&fd.get('d')<=T()?fd.get('d'):T();
+  x.applied=Math.max(0,Math.round(((+x.applied||0)+sg*v)*100)/100);x.current=Math.max(0,Math.round(((+x.current||0)+sg*v)*100)/100);x.up=T();
+  I.ap.push({id:nid(),d,v:sg*v,it:x.id});invSnap();save('inv');fin(sg>0?'Aporte registrado':'Resgate registrado');
 };
 SUB.hab=fd=>{
   const L=hab().habits,id=fd.get('id'),g=Math.max(1,Math.min(7,+fd.get('goal')||7)),o={name:str(fd,'name'),goal:g,color:col(fd.get('color'))};
@@ -1407,6 +1512,7 @@ function seed(name){
   [[1850,0,512,240],[1850,300,468,410],[1850,0,530,198],[1850,450,495,362],[1850,0,507,280]].forEach(([sal,fr,mer,outr],i)=>{const mm=addM(m,i-5);tx(mm,5,'in',sal,'Salário','Salário');if(fr)tx(mm,20,'in',fr,'Plantão extra','Freela');tx(mm,5,'out',650,'Aluguel','Moradia');tx(mm,9,'out',mer,'Mercado do mês','Alimentação');tx(mm,3,'out',120,'Transporte','Transporte');tx(mm,16,'out',outr,'Outros gastos','Outros')});
   DOCS.inv={items:[{id:nid(),name:'Reserva de emergência',type:'Reserva de emergência',applied:3000,current:3185.4,up:t},{id:nid(),name:'Tesouro Selic 2029',type:'Tesouro Direto',applied:1500,current:1612.2,up:t},{id:nid(),name:'CDB 110% do CDI',type:'Renda fixa (CDB/LCI/LCA)',applied:1000,current:1048.9,up:t},{id:nid(),name:'Fundo imobiliário',type:'FIIs',applied:600,current:588.3,up:t},{id:nid(),name:'Ações (carteira)',type:'Ações',applied:400,current:437.1,up:t}]};
   DOCS.inv.hist=[5,4,3,2,1,0].map(k=>{const d=addD(t,-30*k),f=1-k*0.024;return{id:'h-'+d,d,ap:Math.round(6500*(1-k*0.03)),cur:Math.round(6871.9*f*(1-k*0.012))}});
+  DOCS.inv.ap=[300,250,400,200,350,300].map((v,k)=>{const mm=addM(t.slice(0,7),k-5),d=mm+'-'+pad(mm===t.slice(0,7)?Math.min(6,+t.slice(8)):6);return{id:nid(),d,v,it:DOCS.inv.items[k%2].id}});
   DOCS.idi={plan:SEEDPLAN.map(o=>clone(o)),seeded:true,vocab:[['en','grasp','compreender, agarrar'],['en','albeit','embora'],['en','toolbox','caixa de ferramentas'],['en','shrink','encolher, diminuir'],['es','todavía','ainda'],['es','exquisito','delicioso'],['es','embarazada','grávida']].map(([lang,w,tr],i)=>({id:nid(),d:addD(t,-i*3),lang,w,tr,ex:'',src:''}))};
   for(let i=0;i<=45;i++){const d=addD(t,-i),y=d.slice(0,4);let k=0;
     for(const b of DOCS.idi.plan.filter(b=>b.days.includes(dow(d))&&b.lang!=='rest')){k++;if(i===0&&k>1)break;if(((i*13+k*7)%10)<(i<14?7:5))idlDoc(y).log.push({id:nid(),d,p:b.id,lang:b.lang,min:b.min,sk:b.sk,n:''})}
@@ -1424,6 +1530,13 @@ function resetAll(){
 /* ---------- actions ---------- */
 const ACT={
   mclose:closeModal,
+  dedit:()=>{ui.dashEdit=!ui.dashEdit;render()},
+  wmv:el=>setDash(d=>{const vis=d.order.filter(k=>!d.hide.includes(k)),i=vis.indexOf(el.dataset.w),o=vis[i+(+el.dataset.d)];if(i<0||!o)return;const a=d.order.indexOf(el.dataset.w),b=d.order.indexOf(o);[d.order[a],d.order[b]]=[d.order[b],d.order[a]]}),
+  wsz:el=>setDash(d=>{d.size[el.dataset.w]=el.dataset.z}),
+  whide:el=>setDash(d=>{if(!d.hide.includes(el.dataset.w))d.hide.push(el.dataset.w)}),
+  wshow:el=>setDash(d=>{d.hide=d.hide.filter(k=>k!==el.dataset.w)}),
+  wreset:()=>setDash(d=>{d.order=WORDER.slice();d.size={};for(const k in WIDGETS)d.size[k]=WIDGETS[k].def;d.hide=[]}),
+  apnew:el=>apForm(el.dataset.id||''),
   ltog:el=>{const {id,day}=el.dataset;if(!day||day>T())return;const b=idi().plan.find(x=>x.id===id);if(!b||b.lang==='rest')return;const lg=blockLog(b,day);
     if(lg){const f=findLog(lg.id);if(f){DOCS[f.k].log.splice(f.i,1);save(f.k)}}
     else{const y=day.slice(0,4);idlDoc(y).log.push({id:nid(),d:day,p:b.id,lang:b.lang==='mix'?'mix':b.lang==='es'?'es':'en',min:+b.min||0,sk:b.sk||'',n:''});save('idl-'+y);if(day===T()&&planMin(day)>0&&minOn(day).t>=planMin(day))toast('Meta de idiomas de hoje cumprida!')}
@@ -1529,6 +1642,10 @@ document.addEventListener('dragstart',e=>{const c=e.target.closest&&e.target.clo
 document.addEventListener('dragover',e=>{const z=e.target.closest&&e.target.closest('[data-drop]');if(!z)return;e.preventDefault();document.querySelectorAll('.kcol.over').forEach(x=>{if(x!==z)x.classList.remove('over')});z.classList.add('over')});
 document.addEventListener('dragleave',e=>{const z=e.target.closest&&e.target.closest('[data-drop]');if(z&&!z.contains(e.relatedTarget))z.classList.remove('over')});
 document.addEventListener('drop',e=>{const z=e.target.closest&&e.target.closest('[data-drop]');if(!z)return;e.preventDefault();z.classList.remove('over');const id=e.dataTransfer.getData('text/plain');if(id)setSt(id,z.dataset.drop)});
+document.addEventListener('dragstart',e=>{const w=e.target.closest&&e.target.closest('[data-wdrag]');if(!w)return;e.dataTransfer.setData('text/plain','w:'+w.dataset.wdrag);e.dataTransfer.effectAllowed='move'});
+document.addEventListener('dragover',e=>{const w=e.target.closest&&e.target.closest('[data-wdrag]');if(!w)return;e.preventDefault();document.querySelectorAll('.w.dragover').forEach(x=>{if(x!==w)x.classList.remove('dragover')});w.classList.add('dragover')});
+document.addEventListener('drop',e=>{const w=e.target.closest&&e.target.closest('[data-wdrag]');if(!w)return;e.preventDefault();const v=e.dataTransfer.getData('text/plain');if(!v.startsWith('w:'))return;const from=v.slice(2),to=w.dataset.wdrag;if(from===to)return render();setDash(d=>{d.order=d.order.filter(k=>k!==from);d.order.splice(d.order.indexOf(to),0,from)})});
+document.addEventListener('dragend',()=>document.querySelectorAll('.w.dragover').forEach(x=>x.classList.remove('dragover')));
 document.addEventListener('dragend',()=>document.querySelectorAll('.kcol.over').forEach(x=>x.classList.remove('over')));
 let lastDay=T();
 setInterval(()=>{if(document.visibilityState!=='visible'||$('#ov').classList.contains('on'))return;if(T()!==lastDay){lastDay=T();ui.agDate=ui.agSel=T();ui.finM=T().slice(0,7)}if(view==='hoje'||view==='agenda')render()},60000);
