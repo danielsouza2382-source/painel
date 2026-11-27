@@ -479,6 +479,21 @@ button.blk:not([aria-disabled]):hover{filter:brightness(1.08)}
 .chat.anim .msg{animation:pop .4s ease-out both;animation-delay:calc(var(--i)*.2s)}
 @keyframes pop{from{opacity:0;transform:translateY(8px)}}
 .mmore{min-height:34px;padding:0 4px;font-size:14px}
+.tlli{display:flex;gap:12px;align-items:flex-start;border-top:1px solid var(--ln)}
+.tl>.tlli:first-child{border-top:0}.tlli .cb{margin-top:15px}.tlli .tlr{flex:1;min-width:0}
+.tlli.done .tlr{opacity:.55}.tlli.done .tt{text-decoration:line-through}
+.tlli.done .cb,.wlrow.done .cb{background:var(--ag);border-color:var(--ag);color:#fff}
+.w .tlli{border-color:color-mix(in srgb,var(--tone) 18%,var(--ln))}
+.tday{align-self:center;flex:none}
+.todoq{display:grid;grid-template-columns:minmax(0,1fr) 46px;gap:8px;margin-top:10px}.todoq .btn{padding:0;min-height:46px}
+.wlrow{display:flex;gap:10px;align-items:center}.wlrow .cb{width:24px;height:24px}.wlrow .wli{flex:1;min-width:0}
+.wlrow.done .wli{opacity:.55}.wlrow.done .wli span{text-decoration:line-through}
+.mchip.done{text-decoration:line-through;opacity:.55}
+.ev .evb{position:absolute;inset:0;padding:3px 26px 3px 7px;display:flex;flex-direction:column;text-align:left;overflow:hidden}
+.ev .evb b{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ev .evb span{color:var(--mu);white-space:nowrap;overflow:hidden}
+.evc{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:6px;border:1.5px solid color-mix(in srgb,var(--c) 70%,var(--ink));background:var(--sf);display:grid;place-items:center;z-index:2}
+.evc::after{content:"";position:absolute;inset:-8px}.evc .ic{width:13px;height:13px;stroke-width:3}
+.ev.done{opacity:.6}.ev.done .evb b{text-decoration:line-through}.ev.done .evc{background:var(--c);border-color:var(--c);color:#fff}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 <script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
@@ -802,10 +817,14 @@ function tkRow(p){
   const late=p.due&&p.due<T();
   return `<li class="tk ${p.done?'done':''}"><button class="cb" data-act="ptoggle" data-src="${p.src}" data-id="${h(p.id)}" aria-label="${p.done?'Reabrir':'Concluir'}">${p.done?ic('check'):''}</button><button class="tkb" data-act="popen" data-src="${p.src}" data-id="${h(p.id)}"><b>${h(p.t)}</b><span class="tkm"><span><i class="dot" style="--c:${p.c}"></i>${h(p.meta)}${p.type?' · '+h(p.type):''}</span><span class="${late&&!p.done?'late':''}">${late&&!p.done?'atrasada · ':''}${rel(p.due)}</span></span></button></li>`;
 }
-const evLi=day=>e=>`<li><button class="wli" data-act="evopen" data-id="${h(e.id)}" data-day="${day}"><time>${e.all?'dia':h(e.s)}</time><i class="dot" style="--c:${cc(e.c)}"></i><span>${h(e.t)}${e.e&&!e.all?` <small>até ${h(e.e)}</small>`:''}</span></button></li>`;
+const evDone=(e,day)=>Array.isArray(e.dn)&&e.dn.includes(day);
+function toggleEvDone(id,day){const f=findEv(id);if(!f)return null;const e=f.ev;if(!Array.isArray(e.dn))e.dn=[];const i=e.dn.indexOf(day);if(i>=0)e.dn.splice(i,1);else e.dn.push(day);const lim=addD(T(),-120);e.dn=e.dn.filter(x=>x>=lim||x===e.d);save(f.k);return i<0}
+function oldTodos(){const t=T(),lim=addD(t,-14),out=[];for(const k in DOCS)if(/^ag-\d{4}$/.test(k))for(const e of (DOCS[k].events||[]))if(e&&e.todo&&e.d<t&&e.d>=lim&&!evDone(e,e.d))out.push(e);return out.sort((a,b)=>b.d.localeCompare(a.d))}
+const evCb=(e,day)=>{const dn=evDone(e,day);return `<button class="cb" data-act="evdone" data-id="${h(e.id)}" data-day="${day}" aria-label="${dn?'Desmarcar':'Marcar como feito'}: ${h(e.t)}" aria-pressed="${dn}">${dn?ic('check'):''}</button>`};
+const evLi=day=>e=>`<li class="wlrow ${evDone(e,day)?'done':''}">${evCb(e,day)}<button class="wli" data-act="evopen" data-id="${h(e.id)}" data-day="${day}"><time>${e.all?(e.todo?'tarefa':'dia'):h(e.s)}</time><i class="dot" style="--c:${cc(e.c)}"></i><span>${h(e.t)}${e.e&&!e.all?` <small>até ${h(e.e)}</small>`:''}</span></button></li>`;
 const tkLi=t=>`<li><button class="wli" data-act="popen" data-src="${t.src}" data-id="${h(t.id)}"><time>prazo</time><i class="dot" style="--c:${t.c}"></i><span style="${t.done?'text-decoration:line-through;opacity:.6':''}">${h(t.t)}</span></button></li>`;
 function adChips(day){
-  return eventsOn(day).filter(e=>e.all).map(e=>`<button class="chip" style="--c:${cc(e.c)}" data-act="evopen" data-id="${h(e.id)}" data-day="${day}">${h(e.t)}</button>`).join('')
+  return eventsOn(day).filter(e=>e.all).map(e=>`<button class="chip ${evDone(e,day)?'done':''}" style="--c:${cc(e.c)}" data-act="evopen" data-id="${h(e.id)}" data-day="${day}">${evDone(e,day)?ic('check'):''}${h(e.t)}</button>`).join('')
    +tasksDue(day).map(t=>`<button class="chip ${t.done?'done':''}" style="--c:${t.c}" data-act="popen" data-src="${t.src}" data-id="${h(t.id)}">${ic('check')}${h(t.t)}</button>`).join('');
 }
 
@@ -834,11 +853,15 @@ const WR={};
 WR.agenda=()=>{
   const t=T(),evs=eventsOn(t),ws=weekStart(t),nm=nowMin();
   const strip=[0,1,2,3,4,5,6].map(i=>{const d=addD(ws,i),n=eventsOn(d).length+tasksDue(d).filter(x=>!x.done).length;return `<button class="wsd ${d===t?'td':''}" data-act="agday" data-day="${d}" aria-label="${fLong(d)}"><span>${WD[dow(d)]}</span><b>${pd(d).getDate()}</b><span class="dots">${'<i></i>'.repeat(Math.min(n,4))}</span></button>`}).join('');
-  const rows=evs.length?evs.map(e=>{const st=mins(e.s);let en=e.e?mins(e.e):st+60;if(en<=st)en=1440;const past=!e.all&&en<=nm,now=!e.all&&st<=nm&&nm<en;
-    return `<li><button class="tlr ${past?'past':''} ${now?'nowr':''}" data-act="evopen" data-id="${h(e.id)}" data-day="${t}"><span class="tl-t">${e.all?'Dia<small>inteiro</small>':h(e.s)+(e.e?`<small>até ${h(e.e)}</small>`:'')}</span><span class="tl-b"><b><i class="dot" style="--c:${cc(e.c)}"></i>${h(e.t)}</b><span class="mu">${now?'<em class="nowt">agora</em> · ':''}${cn(e.c)}${e.n?' · '+h(e.n):''}</span></span></button></li>`}).join('')
-    :`<li class="empty">Nada marcado para hoje. <button class="lnk" data-act="evnew" data-day="${t}">Adicionar evento</button></li>`;
+  const rows=evs.length?evs.map(e=>{const st=mins(e.s);let en=e.e?mins(e.e):st+60;if(en<=st)en=1440;const dn=evDone(e,t),past=!e.all&&en<=nm&&!dn,now=!e.all&&st<=nm&&nm<en&&!dn;
+    return `<li class="tlli ${dn?'done':''}">${evCb(e,t)}<button class="tlr ${now?'nowr':''}" data-act="evopen" data-id="${h(e.id)}" data-day="${t}"><span class="tl-t">${e.all?(e.todo?'Hoje<small>tarefa</small>':'Dia<small>inteiro</small>'):h(e.s)+(e.e?`<small>até ${h(e.e)}</small>`:'')}</span><span class="tl-b"><b><i class="dot" style="--c:${cc(e.c)}"></i><span class="tt">${h(e.t)}</span></b><span class="mu">${dn?'feito · ':now?'<em class="nowt">agora</em> · ':past?'já passou, marque se fez · ':''}${cn(e.c)}${e.n?' · '+h(e.n):''}</span></span></button></li>`}).join('')
+    :`<li class="empty">Nada marcado para hoje.</li>`;
+  const ndn=evs.filter(e=>evDone(e,t)).length,ot=oldTodos();
+  const prog=evs.length?`<div class="mrow" style="margin-top:2px"><span><b>${ndn}</b> de ${evs.length} feitos hoje</span>${ndn===evs.length?'<span class="pos" style="font-weight:700">tudo feito!</span>':''}</div><div class="bar thin" style="--c:var(--ag);margin-bottom:6px"><i style="width:${(ndn/evs.length*100).toFixed(1)}%"></i></div>`:'';
+  const late=ot.length?`<div class="nxt"><h4>Ficou pendente</h4><ul class="tl">${ot.slice(0,5).map(e=>`<li class="tlli">${evCb(e,e.d)}<button class="tlr" data-act="evopen" data-id="${h(e.id)}" data-day="${e.d}"><span class="tl-t"><small style="margin:0">${dd(e.d,t)===1?'ontem':fShort(e.d)}</small></span><span class="tl-b"><b><span class="tt">${h(e.t)}</span></b></span></button><button class="btn sm ghost tday" data-act="todomv" data-id="${h(e.id)}">Para hoje</button></li>`).join('')}</ul></div>`:'';
+  const quick=`<form data-form="todo" class="todoq"><input type="text" name="t" maxlength="120" placeholder="Adicionar tarefa para hoje…" autocomplete="off" aria-label="Nova tarefa para hoje"><button class="btn" aria-label="Adicionar tarefa">${ic('plus')}</button></form>`;
   const nx=[1,2,3].map(i=>{const d=addD(t,i),ev=eventsOn(d);return `<button class="nxd" data-act="agday" data-day="${d}"><b>${i===1?'Amanhã':cap(WDF[dow(d)])}</b><span>${ev.length?ev.slice(0,3).map(e=>(e.all?'':h(e.s)+' ')+h(e.t)).join(' · ')+(ev.length>3?' …':''):'livre'}</span></button>`}).join('');
-  return{links:'<button class="lnk" data-act="goag">Ver semana</button>',body:`<div class="wstrip">${strip}</div><ul class="tl">${rows}</ul><div class="nxt"><h4>Próximos dias</h4>${nx}</div>`};
+  return{links:'<button class="lnk" data-act="goag">Ver semana</button>',body:`<div class="wstrip">${strip}</div>${prog}<ul class="tl">${rows}</ul>${quick}${late}<div class="nxt"><h4>Próximos dias</h4>${nx}</div>`};
 };
 WR.pend=()=>{
   const t=T(),pend=pendAll(),over=pend.filter(p=>p.due&&p.due<t),wk=pend.filter(p=>p.due&&p.due>=t&&dd(t,p.due)<7),pl=over.concat(wk).slice(0,8);
@@ -899,7 +922,13 @@ function nudges(){
   if(hr<5)add('sono',96,`Já é madrugada${vc}. ${firstTomorrow?`Seu dia começa às <b>${h(firstTomorrow.h)}</b> com ${h(firstTomorrow.t)}. `:''}Dormir agora rende mais que qualquer revisão.`);
   else if(hr>=23)add('sono',72,`Já são ${hr}h${vc}. ${firstTomorrow?`Amanhã começa às <b>${h(firstTomorrow.h)}</b> com ${h(firstTomorrow.t)}. `:''}Que tal ir encerrando o dia?`);
   // próximo compromisso / agora
-  const nx=evs.find(e=>mins(e.s)>nm),cur=evs.find(e=>{const s=mins(e.s);let en=e.e?mins(e.e):s+60;if(en<=s)en=1440;return s<=nm&&nm<en});
+  const nx=evs.find(e=>mins(e.s)>nm),cur=evs.find(e=>{if(evDone(e,t))return false;const s=mins(e.s);let en=e.e?mins(e.e):s+60;if(en<=s)en=1440;return s<=nm&&nm<en});
+  const unm=evs.filter(e=>{if(evDone(e,t))return false;const s=mins(e.s);let en=e.e?mins(e.e):s+60;if(en<=s)en=1440;return en<=nm});
+  if(unm.length&&hr>=12)add('unm',hr>=19?67:47,`Ficou sem marcar: <b>${h(unm[0].t)}</b> (${h(unm[0].s)})${unm.length>1?' e mais '+(unm.length-1):''}. Já fez?`,{l:'Marcar feito',a:'evdone',d:{id:unm[0].id,day:t}});
+  const tdo=eventsOn(t).filter(e=>e.all&&!evDone(e,t));
+  if(tdo.length&&hr>=17)add('tdo',hr>=20?63:45,`Na lista de hoje ainda falta${tdo.length>1?'m':''}: ${tdo.slice(0,2).map(e=>'<b>'+h(e.t)+'</b>').join(' e ')}${tdo.length>2?' e mais '+(tdo.length-2):''}.`,{l:'Marcar '+tdo[0].t,a:'evdone',d:{id:tdo[0].id,day:t}});
+  const otd=oldTodos();if(otd.length)add('otd',54,`Ficou pendente${dd(otd[0].d,t)===1?' de ontem':''}: <b>${h(otd[0].t)}</b>. Traz para hoje?`,{l:'Para hoje',a:'todomv',d:{id:otd[0].id}});
+  {const all=eventsOn(t);if(all.length>=2&&all.every(e=>evDone(e,t)))add('agok',53,`Agenda de hoje toda concluída. Dia bem aproveitado!`)}
   if(hr>=5&&nx&&mins(nx.s)-nm<=120)add('prox',91,`Daqui a <b>${minTxt(mins(nx.s)-nm)}</b>: ${h(nx.t)} (${h(nx.s)}).`,{l:'Ver',a:'evopen',d:{id:nx.id,day:t}});
   else if(cur)add('agora',60,`Agora: <b>${h(cur.t)}</b>${cur.e?' até '+h(cur.e):''}.`);
   if(hr>=5&&hr<12){if(evs.length)add('dia',50,`Bom dia${vc}! Hoje são <b>${plural(evs.length,'compromisso','compromissos')}</b>; o primeiro é ${h(evs[0].t)} às ${h(evs[0].s)}.`);else add('dia',30,`Bom dia${vc}! Agenda livre hoje: bom dia para adiantar alguma pendência.`)}
@@ -957,7 +986,7 @@ VR.hoje=()=>{
   const over=pend.filter(p=>p.due&&p.due<t),wk=pend.filter(p=>p.due&&p.due>=t&&dd(t,p.due)<7),hd=H.filter(x=>isDone(x.id,t)).length;
   let o=chatHTML();
   if(c.sample)o+=`<div class="note"><span>Este é um exemplo preenchido para você explorar. Quando quiser, apague e comece com os seus dados.</span><button class="btn sm ghost" data-act="reset">Apagar exemplo</button></div>`;
-  o+=`<div class="dtop"><div class="stats">${stat(plural(evs.length,'compromisso hoje','compromissos hoje'),'var(--ag)')}${stat(plural(wk.length,'pendência nos próximos 7 dias','pendências nos próximos 7 dias'),'var(--fac)')}${over.length?stat(plural(over.length,'atrasada','atrasadas'),'var(--bad)'):''}${H.length?stat(hd+' de '+H.length+' hábitos feitos','var(--hab)'):''}</div><button class="btn sm ${ed?'':'ghost'}" data-act="dedit" aria-pressed="${ed}">${ic(ed?'check':'sliders')}${ed?'Concluir':'Personalizar'}</button></div>`;
+  o+=`<div class="dtop"><div class="stats">${stat(evs.length?evs.filter(e=>evDone(e,t)).length+' de '+plural(evs.length,'item da agenda feito','itens da agenda feitos'):'agenda livre hoje','var(--ag)')}${stat(plural(wk.length,'pendência nos próximos 7 dias','pendências nos próximos 7 dias'),'var(--fac)')}${over.length?stat(plural(over.length,'atrasada','atrasadas'),'var(--bad)'):''}${H.length?stat(hd+' de '+H.length+' hábitos feitos','var(--hab)'):''}</div><button class="btn sm ${ed?'':'ghost'}" data-act="dedit" aria-pressed="${ed}">${ic(ed?'check':'sliders')}${ed?'Concluir':'Personalizar'}</button></div>`;
   if(ed)o+=`<div class="dedit"><p><b>Personalizando a página.</b> Use as setas (ou arraste, no computador) para mudar a ordem, e P, M e G para o tamanho: pequeno, médio ou largura toda. No celular os blocos ficam um embaixo do outro. Vale para todos os seus aparelhos.</p><div class="opts">${dc.hide.map(k=>`<button class="btn sm ghost" data-act="wshow" data-w="${k}">${ic('plus')}${WIDGETS[k].t}</button>`).join('')}<button class="btn sm ghost" data-act="wreset">Restaurar padrão</button></div></div>`;
   const vis=dc.order.filter(k=>!dc.hide.includes(k));
   o+=`<div class="dgrid ${ed?'editing':''}">${vis.map((k,i)=>{
@@ -991,7 +1020,8 @@ function dayCol(day,h0,h1){
   for(const it of layout(eventsOn(day).filter(e=>!e.all))){
     const st=Math.max(it.s,h0*60),en=Math.min(Math.max(it.en,it.s+20),h1*60);
     const top=(st-h0*60)/60*HH,ht=Math.max((en-st)/60*HH-2,22),e=it.e;
-    s+=`<button class="ev" data-act="evopen" data-id="${h(e.id)}" data-day="${day}" style="--c:${cc(e.c)};top:${top}px;height:${ht}px;left:calc(${it.c/it.n*100}% + 2px);width:calc(${100/it.n}% - 4px)"><b>${h(e.t)}</b>${ht>34?`<span>${h(e.s)}${e.e?'–'+h(e.e):''}</span>`:''}</button>`;
+    const dn=evDone(e,day);
+    s+=`<div class="ev ${dn?'done':''}" style="--c:${cc(e.c)};top:${top}px;height:${ht}px;left:calc(${it.c/it.n*100}% + 2px);width:calc(${100/it.n}% - 4px)"><button class="evb" data-act="evopen" data-id="${h(e.id)}" data-day="${day}"><b>${h(e.t)}</b>${ht>34?`<span>${h(e.s)}${e.e?'–'+h(e.e):''}</span>`:''}</button><button class="evc" data-act="evdone" data-id="${h(e.id)}" data-day="${day}" aria-label="${dn?'Desmarcar':'Marcar como feito'}: ${h(e.t)}" aria-pressed="${dn}">${dn?ic('check'):''}</button></div>`;
   }
   if(isT){const m=nowMin();if(m>=h0*60&&m<=h1*60)s+=`<div class="nowl" style="top:${(m-h0*60)/60*HH}px"></div>`}
   return s+'</div>';
@@ -1025,7 +1055,7 @@ VR.agenda=()=>{
     let g=wdOrder().map(i=>`<div class="mh">${WD[i]}</div>`).join('');
     for(let i=0;i<weeks*7;i++){
       const x=addD(start,i),ev=eventsOn(x),tk=tasksDue(x).filter(k=>!k.done),all=ev.length+tk.length;
-      const chips=ev.slice(0,3).map(e=>`<span class="mchip" style="--c:${cc(e.c)}">${e.all?'':h(e.s)+' '}${h(e.t)}</span>`).join('')+(ev.length<3?tk.slice(0,3-ev.length).map(k=>`<span class="mchip" style="--c:${k.c}">✓ ${h(k.t)}</span>`).join(''):'');
+      const chips=ev.slice(0,3).map(e=>`<span class="mchip ${evDone(e,x)?'done':''}" style="--c:${cc(e.c)}">${e.all?'':h(e.s)+' '}${h(e.t)}</span>`).join('')+(ev.length<3?tk.slice(0,3-ev.length).map(k=>`<span class="mchip" style="--c:${k.c}">✓ ${h(k.t)}</span>`).join(''):'');
       g+=`<div class="mc ${pd(x).getMonth()!==mo?'out':''} ${x===t?'td':''} ${x===ui.agSel?'sel':''}" data-act="agsel" data-day="${x}" role="button" tabindex="0" aria-label="${fLong(x)}"><span class="mn">${pd(x).getDate()}</span>${mob?`<span class="mdots">${ev.slice(0,3).map(e=>`<i style="--c:${cc(e.c)}"></i>`).join('')}${tk.length&&ev.length<3?'<i style="--c:var(--fac)"></i>':''}</span>`:chips+(all>3?`<span class="mmore">+${all-3}</span>`:'')}</div>`;
     }
     body=`<div class="mg">${g}</div>`+dayPanel(ui.agSel);
@@ -1357,6 +1387,7 @@ function evForm(id,day,start,occ){
   <label class="fld f-until"><span>Repetir até (opcional)</span><input type="date" name="until" value="${h(e&&e.until||'')}"></label>
   <label class="fld"><span>Notas</span><textarea name="n" maxlength="500" placeholder="Local, sala, link…">${h(e?e.n:'')}</textarea></label>
   ${r?'<p class="hint">Alterações aqui valem para todas as repetições.</p>':''}
+  ${e?`<label class="tog"><input type="checkbox" name="dn" ${evDone(e,occ||e.d)?'checked':''}> Feito ${(occ||e.d)===T()?'hoje':'em '+fShort(occ||e.d)}</label>`:''}
   <div class="acts">${e?`<button type="button" class="btn danger" data-act="evdel" data-id="${h(id)}" data-occ="${h(occ||'')}">Excluir</button>`:''}<span class="sp"></span><button type="button" class="btn ghost" data-act="mclose">Cancelar</button><button class="btn">Salvar</button></div></form>`);
 }
 function facForm(id){
@@ -1455,9 +1486,16 @@ SUB.ev=fd=>{
   const r=fd.get('r');
   if(r){o.r=r;if(r==='w'){o.days=fd.getAll('wd').map(Number);if(!o.days.length)o.days=[dow(o.d)]}const u=fd.get('until');if(u&&u>=o.d)o.until=u}
   const old=findEv(id);
-  if(old){if(o.r&&Array.isArray(old.ev.ex))o.ex=old.ev.ex;DOCS[old.k].events.splice(old.i,1);save(old.k)}
+  if(old){if(o.r&&Array.isArray(old.ev.ex))o.ex=old.ev.ex;if(Array.isArray(old.ev.dn))o.dn=old.ev.dn.slice();if(old.ev.todo)o.todo=true;
+    const dday=fd.get('occ')||old.ev.d,want=!!fd.get('dn');o.dn=(o.dn||[]).filter(x=>x!==dday);if(want)o.dn.push(dday);if(!o.dn.length)delete o.dn;
+    DOCS[old.k].events.splice(old.i,1);save(old.k)}
   const k=o.r?'ag-rec':'ag-'+o.d.slice(0,4);agDoc(k).events.push(o);save(k);
   fin(old?'Evento atualizado':'Evento criado');
+};
+SUB.todo=fd=>{
+  const tt=str(fd,'t');if(!tt)return;const t=T(),k='ag-'+t.slice(0,4);
+  agDoc(k).events.push({id:nid(),t:tt,d:t,all:true,todo:true,s:'',e:'',c:'pessoal',n:''});save(k);
+  refocus='form[data-form=todo] input[name=t]';render();toast('Tarefa adicionada');
 };
 SUB.fac=fd=>{
   const F=facul(),id=fd.get('id'),o={t:str(fd,'t'),sub:fd.get('sub')||'',due:fd.get('due')||'',type:FT.includes(fd.get('type'))?fd.get('type'):'Outro',n:str(fd,'n')};
@@ -1658,6 +1696,8 @@ const ACT={
   goag:()=>{ui.agMode='week';ui.agDate=T();saveUi();go('agenda')},
   evnew:el=>evForm(null,el.dataset.day||T()),facnew:()=>facForm(),trabnew:el=>trabForm(null,el.dataset.st),txnew:()=>txForm(),habnew:()=>habForm(),invnew:()=>invForm(),subs:subsForm,
   evopen:el=>evForm(el.dataset.id,null,null,el.dataset.day),
+  evdone:el=>{const r=toggleEvDone(el.dataset.id,el.dataset.day);if(r===null)return;render();if(r){const t=T(),evs=eventsOn(t);if(el.dataset.day===t&&evs.length&&evs.every(e=>evDone(e,t)))toast('Agenda de hoje concluída!');else toast('Feito')}},
+  todomv:el=>{const f=findEv(el.dataset.id);if(!f)return;const t=T(),e=f.ev;DOCS[f.k].events.splice(f.i,1);save(f.k);e.d=t;if(Array.isArray(e.dn))e.dn=e.dn.filter(x=>x!==t);const k='ag-'+t.slice(0,4);agDoc(k).events.push(e);save(k);render();toast('Movida para hoje')},
   popen:el=>el.dataset.src==='fac'?facForm(el.dataset.id):trabForm(el.dataset.id),
   txopen:el=>txForm(el.dataset.id),invopen:el=>invForm(el.dataset.id),habedit:el=>habForm(el.dataset.id),
   agmode:el=>{ui.agMode=el.dataset.m;if(ui.agMode==='month')ui.agSel=ui.agDate;saveUi();needScroll=true;render()},
